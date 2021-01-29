@@ -30,14 +30,26 @@ const originData = {
   }
 };
 
+const isChoosed = (list, id) => {
+  return list.map((item) => item.heroId).includes(id);
+};
+
 const HeroRadio = React.memo(
   ({ name, heroId, index, changeOption, isChoosed }) => {
+    console.log(`组件渲染：HeroRadio，${heroId}`);
+
     const onClick = useCallback(() => {
       console.log(`点击了英雄: ID：${heroId}`);
       changeOption({
-        heroId
+        heroId,
+        index,
+        name
       });
-    }, [changeOption, heroId]);
+    }, [changeOption, heroId, index, name]);
+
+    useEffect(() => {
+      console.log("changeOption变化");
+    }, [changeOption]);
 
     return (
       <div onClick={onClick}>
@@ -51,19 +63,31 @@ const HeroRadio = React.memo(
   }
 );
 
-function ListContainer({ list, options, changeOption }) {
-  return list.map((item, index) => {
-    return (
-      <HeroRadio
-        {...item}
-        key={item.heroId}
-        index={index}
-        changeOption={changeOption}
-      >
-        {" "}
-      </HeroRadio>
-    );
-  });
+function ListContainer({ list, options, changeOption, name }) {
+  console.log(`组件渲染：ListContainer`);
+
+  return (
+    <div
+      style={{
+        marginBottom: 30
+      }}
+    >
+      <span>类别 {name}</span>
+      {list.map((item, index) => {
+        return (
+          <HeroRadio
+            {...item}
+            key={item.heroId}
+            index={index}
+            changeOption={changeOption}
+            isChoosed={isChoosed(options, item.heroId)}
+          >
+            {" "}
+          </HeroRadio>
+        );
+      })}
+    </div>
+  );
 }
 
 function App() {
@@ -73,19 +97,42 @@ function App() {
 
   const [choosedOption, setChoosedOption] = useState([]);
 
-  const changeOption = useCallback(() => {}, []);
+  const changeOption = useCallback(
+    ({ heroId, ...rest }) => {
+      const options = [...choosedOption];
+
+      const indexInChoosedOption = options.findIndex(
+        (item) => item.heroId === heroId
+      );
+
+      if (indexInChoosedOption === -1) {
+        //未选择到已选择, 添加到这里
+        options.push({
+          heroId,
+          ...rest
+        });
+      } else {
+        options.splice(indexInChoosedOption, 1); //存在的话就删除
+      }
+
+      setChoosedOption(options);
+
+      console.log(indexInChoosedOption);
+    },
+    [choosedOption]
+  );
+
+  console.log(`根组件渲染：App`);
 
   return (
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
-
       {Object.keys(list).map((key) => {
         return (
           <ListContainer
             list={list[key].list}
             options={choosedOption}
             changeOption={changeOption}
+            name={list[key].name}
           >
             {" "}
           </ListContainer>
