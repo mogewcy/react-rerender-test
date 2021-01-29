@@ -122,7 +122,7 @@ function App() {
     [choosedOption]
   );
 
-  console.log(`根组件渲染：App`);
+  console.log(`根组件开始渲染：App`);
 
   return (
     <div className="App">
