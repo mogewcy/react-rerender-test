@@ -1,5 +1,19 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext
+} from "react";
 import "./styles.css";
+
+import {
+  OptionContext,
+  OptionProvider,
+  ACTION
+} from "./hook/useCurrentOptions";
+
+const commitMessage = "去除heroRadio对change的依赖";
 
 const originData = {
   a: {
@@ -95,31 +109,19 @@ function App() {
     return originData;
   }, []);
 
-  const [choosedOption, setChoosedOption] = useState([]);
+  const [{ choosedOption }, dispatch] = useContext(OptionContext);
 
   const changeOption = useCallback(
     ({ heroId, ...rest }) => {
-      const options = [...choosedOption];
-
-      const indexInChoosedOption = options.findIndex(
-        (item) => item.heroId === heroId
-      );
-
-      if (indexInChoosedOption === -1) {
-        //未选择到已选择, 添加到这里
-        options.push({
+      dispatch({
+        type: ACTION.change,
+        payload: {
           heroId,
           ...rest
-        });
-      } else {
-        options.splice(indexInChoosedOption, 1); //存在的话就删除
-      }
-
-      setChoosedOption(options);
-
-      console.log(indexInChoosedOption);
+        }
+      });
     },
-    [choosedOption]
+    [dispatch]
   );
 
   console.log(`根组件开始渲染：App`);
@@ -142,4 +144,10 @@ function App() {
   );
 }
 
-export default App;
+export default () => {
+  return (
+    <OptionProvider>
+      <App> </App>
+    </OptionProvider>
+  );
+};
