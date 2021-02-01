@@ -5,15 +5,12 @@ import React, {
   useMemo,
   useContext
 } from "react";
+
 import "./styles.css";
 
-import {
-  OptionContext,
-  OptionProvider,
-  ACTION
-} from "./hook/useCurrentOptions";
+import { useImmer } from "use-immer";
 
-const commitMessage = "去除heroRadio对change的依赖";
+const commitMessage = "引入immer";
 
 const originData = {
   a: {
@@ -44,22 +41,19 @@ const originData = {
   }
 };
 
-const isChoosed = (list, id) => {
-  return list.map((item) => item.heroId).includes(id);
-};
-
 const HeroRadio = React.memo(
-  ({ name, heroId, index, changeOption, isChoosed }) => {
+  ({ name, heroId, index, changeOption, isChoosed, type }) => {
     console.log(`组件渲染：HeroRadio，${heroId}`);
 
-    const onClick = useCallback(() => {
+    const onClick = () => {
       console.log(`点击了英雄: ID：${heroId}`);
       changeOption({
         heroId,
         index,
-        name
+        name,
+        type
       });
-    }, [changeOption, heroId, index, name]);
+    };
 
     useEffect(() => {
       console.log("changeOption变化");
@@ -71,13 +65,13 @@ const HeroRadio = React.memo(
 
         <span>ID: {heroId} </span>
 
-        <span>是否被选中: {String(isChoosed)}</span>
+        <span>是否被选中: {String(Boolean(isChoosed))}</span>
       </div>
     );
   }
 );
 
-function ListContainer({ list, options, changeOption, name }) {
+const ListContainer = React.memo(({ list, changeOption, name, type }) => {
   console.log(`组件渲染：ListContainer`);
 
   return (
@@ -96,7 +90,8 @@ function ListContainer({ list, options, changeOption, name }) {
             key={item.heroId}
             index={index}
             changeOption={changeOption}
-            isChoosed={isChoosed(options, item.heroId)}
+            isChoosed={item.isChoosed}
+            type={type}
           >
             {" "}
           </HeroRadio>
@@ -104,26 +99,19 @@ function ListContainer({ list, options, changeOption, name }) {
       })}
     </div>
   );
-}
+});
 
 function App() {
-  const list = useMemo(() => {
-    return originData;
-  }, []);
-
-  const [{ choosedOption }, dispatch] = useContext(OptionContext);
+  const [list, setList] = useImmer(originData);
 
   const changeOption = useCallback(
-    ({ heroId, ...rest }) => {
-      dispatch({
-        type: ACTION.change,
-        payload: {
-          heroId,
-          ...rest
-        }
+    (res) => {
+      const { index, type } = res;
+      setList((draft) => {
+        draft[type].list[index].isChoosed = !draft[type].list[index].isChoosed;
       });
     },
-    [dispatch]
+    [setList]
   );
 
   console.log(`根组件开始渲染：App`);
@@ -134,9 +122,10 @@ function App() {
         return (
           <ListContainer
             list={list[key].list}
-            options={choosedOption}
             changeOption={changeOption}
             name={list[key].name}
+            key={key}
+            type={key}
           >
             {" "}
           </ListContainer>
@@ -147,9 +136,5 @@ function App() {
 }
 
 export default () => {
-  return (
-    <OptionProvider>
-      <App> </App>
-    </OptionProvider>
-  );
+  return <App> </App>;
 };
