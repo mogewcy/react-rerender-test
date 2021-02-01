@@ -88,6 +88,8 @@ function ListContainer({ list, options, changeOption, name }) {
     >
       <span>类别 {name}</span>
       {list.map((item, index) => {
+        console.log(`组件循环, ListContainer: Map`);
+
         return (
           <HeroRadio
             {...item}
