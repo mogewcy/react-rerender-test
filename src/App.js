@@ -63,6 +63,8 @@ const HeroRadio = React.memo(
   }
 );
 
+HeroRadio.displayName = "HeroRadio";
+
 function ListContainer({ list, options, changeOption, name }) {
   console.log(`组件渲染：ListContainer`);
 
@@ -126,6 +128,8 @@ function App() {
 
   return (
     <div className="App">
+      <h1>初版： 有性能问题</h1>
+
       {Object.keys(list).map((key) => {
         return (
           <ListContainer
