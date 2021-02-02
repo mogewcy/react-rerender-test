@@ -71,6 +71,8 @@ const HeroRadio = React.memo(
   }
 );
 
+HeroRadio.displayName = "HeroRadio";
+
 const ListContainer = React.memo(({ list, changeOption, name, type }) => {
   console.log(`组件渲染：ListContainer`);
 
@@ -118,6 +120,8 @@ function App() {
 
   return (
     <div className="App">
+      <h1>优化3: 引入immer</h1>
+
       {Object.keys(list).map((key) => {
         return (
           <ListContainer
