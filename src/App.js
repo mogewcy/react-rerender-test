@@ -10,7 +10,10 @@ import "./styles.css";
 
 import { useImmer } from "use-immer";
 
-const commitMessage = "引入immer";
+import produce from "immer";
+
+import { createStore } from "redux";
+import { useSelector, Provider, useDispatch } from "react-redux";
 
 const originData = {
   a: {
@@ -41,40 +44,66 @@ const originData = {
   }
 };
 
-const HeroRadio = React.memo(
-  ({ name, heroId, index, changeOption, isChoosed, type }) => {
-    console.log(`组件渲染：HeroRadio，${heroId}`);
+const ACTION = {
+  change: "change"
+};
 
-    const onClick = () => {
-      console.log(`点击了英雄: ID：${heroId}`);
-      changeOption({
-        heroId,
-        index,
-        name,
-        type
-      });
-    };
+const reducer = produce((draft, action) => {
+  if (action.type === ACTION.change) {
+    const { index, type } = action.payload;
 
-    useEffect(() => {
-      console.log("changeOption变化");
-    }, [changeOption]);
-
-    return (
-      <div onClick={onClick}>
-        <span>英雄名: {name}</span>
-
-        <span>ID: {heroId} </span>
-
-        <span>是否被选中: {String(Boolean(isChoosed))}</span>
-      </div>
-    );
+    draft.data[type]["list"][index].isChoosed = !draft.data[type]["list"][index]
+      .isChoosed;
   }
-);
+});
+
+const store = createStore(reducer, {
+  data: originData,
+  heroIdMap: Object.keys(originData).reduce((acc, cur) => {
+    acc[cur] = originData[cur].list.map((item) => item.heroId);
+
+    return acc;
+  }, {})
+});
+
+const HeroRadio = React.memo(({ heroId, index, type }) => {
+  console.log(`组件渲染：HeroRadio，${heroId}`);
+
+  const dispatch = useDispatch();
+
+  const { name, isChoosed } = useSelector((state) => {
+    const data = state.data[type].list[index];
+
+    return data;
+  });
+
+  const onClick = () => {
+    console.log(`点击了英雄: ID：${heroId}`);
+
+    dispatch({
+      type: ACTION.change,
+      payload: {
+        index,
+        type
+      }
+    });
+  };
+
+  return (
+    <div onClick={onClick}>
+      <span>英雄名: {name}</span>
+
+      <span>ID: {heroId} </span>
+
+      <span>是否被选中: {String(Boolean(isChoosed))}</span>
+    </div>
+  );
+});
 
 HeroRadio.displayName = "HeroRadio";
 
-const ListContainer = React.memo(({ list, changeOption, name, type }) => {
-  console.log(`组件渲染：ListContainer`);
+const ListContainer = React.memo(({ heros, type }) => {
+  console.log(`组件渲染：ListContainer ${type}`);
 
   return (
     <div
@@ -82,19 +111,13 @@ const ListContainer = React.memo(({ list, changeOption, name, type }) => {
         marginBottom: 30
       }}
     >
-      <span>类别 {name}</span>
-      {list.map((item, index) => {
+      <span>类别</span>
+
+      {heros.map((heroId, index) => {
         console.log(`组件循环, ListContainer: Map`);
 
         return (
-          <HeroRadio
-            {...item}
-            key={item.heroId}
-            index={index}
-            changeOption={changeOption}
-            isChoosed={item.isChoosed}
-            type={type}
-          >
+          <HeroRadio key={heroId} index={index} type={type} heroId={heroId}>
             {" "}
           </HeroRadio>
         );
@@ -104,33 +127,19 @@ const ListContainer = React.memo(({ list, changeOption, name, type }) => {
 });
 
 function App() {
-  const [list, setList] = useImmer(originData);
+  const heroIdMap = useSelector((state) => {
+    return state.heroIdMap;
+  });
 
-  const changeOption = useCallback(
-    (res) => {
-      const { index, type } = res;
-      setList((draft) => {
-        draft[type].list[index].isChoosed = !draft[type].list[index].isChoosed;
-      });
-    },
-    [setList]
-  );
-
-  console.log(`根组件开始渲染：App`);
+  console.log(`根组件开始渲染：App`, heroIdMap);
 
   return (
     <div className="App">
-      <h1>优化3: 引入immer</h1>
+      <h1>优化4: 改变数据结构，引入reducer, 让ListContainer的props不可变</h1>
 
-      {Object.keys(list).map((key) => {
+      {Object.keys(heroIdMap).map((key) => {
         return (
-          <ListContainer
-            list={list[key].list}
-            changeOption={changeOption}
-            name={list[key].name}
-            key={key}
-            type={key}
-          >
+          <ListContainer heros={heroIdMap[key]} key={key} type={key}>
             {" "}
           </ListContainer>
         );
@@ -140,5 +149,9 @@ function App() {
 }
 
 export default () => {
-  return <App> </App>;
+  return (
+    <Provider store={store}>
+      <App> </App>;
+    </Provider>
+  );
 };
