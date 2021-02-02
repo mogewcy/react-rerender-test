@@ -106,6 +106,8 @@ function ListContainer({ list, options, changeOption, name }) {
   );
 }
 
+HeroRadio.displayName = "HeroRadio";
+
 function App() {
   const list = useMemo(() => {
     return originData;
@@ -130,6 +132,8 @@ function App() {
 
   return (
     <div className="App">
+      <h1>优化1: 减少HeroRadio组件更新</h1>
+
       {Object.keys(list).map((key) => {
         return (
           <ListContainer
