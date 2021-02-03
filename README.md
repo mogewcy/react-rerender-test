@@ -50,17 +50,24 @@
 #### 优化效果
 
 - 操作heroRadio后，只会re-render发生改变的那个组件，其他组件均不发生重渲染
+
 ## 总结
 
 - 减少数据的变动范围，尽量让数据不可变
 - 打平数据，减少数据嵌套，避免让一次改动影响到其他数据
+
 ## 参考
-[https://mp.weixin.qq.com/s/6SIIi4kx1jbZ7vPCtSCDIw](https://mp.weixin.qq.com/s/6SIIi4kx1jbZ7vPCtSCDIw)
-[https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape)
-[https://segmentfault.com/a/1190000017270785](https://segmentfault.com/a/1190000017270785)
-[https://www.yuque.com/marckon/react-redux.cn/usage#2gehtf](https://www.yuque.com/marckon/react-redux.cn/usage#2gehtf)
-[https://juejin.cn/post/6844903865926549511](https://juejin.cn/post/6844903865926549511) 可以多看看
-[https://juejin.cn/post/6919667933861904392](https://juejin.cn/post/6919667933861904392)  可以多看看
+- [https://mp.weixin.qq.com/s/6SIIi4kx1jbZ7vPCtSCDIw](https://mp.weixin.qq.com/s/6SIIi4kx1jbZ7vPCtSCDIw)
+
+- [https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape)
+
+- [https://segmentfault.com/a/1190000017270785](https://segmentfault.com/a/1190000017270785)
+
+- [https://www.yuque.com/marckon/react-redux.cn/usage#2gehtf](https://www.yuque.com/marckon/react-redux.cn/usage#2gehtf)
+
+- [https://juejin.cn/post/6844903865926549511](https://juejin.cn/post/6844903865926549511) 可以多看看
+
+- [https://juejin.cn/post/6919667933861904392](https://juejin.cn/post/6919667933861904392)  可以多看看
 
 
 
