@@ -12,27 +12,14 @@
 - HeroRadio
 
 单个的选项，在选项中可以切换该选项的选中态
-### [第一版](https://github.com/mogewcy/react-rerender-test/tree/main)
-| 组件名 | state | props |
-| --- | --- | --- |
-| App | 
-- list
-- currentOptions
- | 无 |
-| ListContainer | 无 | 
-- list
-- currentOptions
- |
-| HeroRadio | 无 | 
-- name,
--  heroId,
--  index, 
-- changeOption
-- isChoosed
- |
 
+### [第一版](https://github.com/mogewcy/react-rerender-test/tree/main)
+
+![](https://cdn.nlark.com/yuque/0/2021/png/126348/1612324853938-c1ab66ca-781c-4251-a39d-72e79c732e50.png)
 
 #### heroRadio中可以更改currentOptions，currentOptions会发生改变，引起了changeOption的改变，所以当操作一个heroRadio时，会引起所有的heroRadio改变
+
+
 ### 第二版
 [https://github.com/mogewcy/react-rerender-test/tree/useContext-useReducer](https://github.com/mogewcy/react-rerender-test/tree/useContext-useReducer)
 #### 优化点
